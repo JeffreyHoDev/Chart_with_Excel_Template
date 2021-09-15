@@ -1,6 +1,6 @@
 const excel = require('./excel')
 const cors = require('cors')
-
+const bodyParser = require('body-parser')
 const express = require('express')
 
 const port = 6001
@@ -18,7 +18,7 @@ const knex = require('knex')({
 
 const app = express()
 app.use(cors())
-
+app.use(bodyParser.json())
 
 app.get('/getExcel', async (req, res) => {
 
@@ -45,19 +45,22 @@ app.get('/getExcel', async (req, res) => {
 
 })
 
-app.get('/getFatigue', async (req, res) => {
+app.post('/getFatigue', (req, res) => {
 
+    let type = req.body.type;
     let validCount = 0
     let invalidCount = 0
+    let string = `${type}_validation`
+
     knex('eventrecord')
-    .count('human_validation')
-    .where({'human_validation': "Valid", 'event_type': 'Driver Fatigue'})
+    .count(`${type}_validation`)
+    .where({[string]: "Valid", 'event_type': 'Driver Fatigue'})
     .then(data => validCount = data[0]["count"])
     .catch(console.log)
 
     knex('eventrecord')
-    .count('human_validation')
-    .where({'human_validation': "Invalid", 'event_type': 'Driver Fatigue'})
+    .count(`${type}_validation`)
+    .where({[string]: "Invalid", 'event_type': 'Driver Fatigue'})
     .then(data => invalidCount = data[0]["count"])
     .then(() => {
         let responseData = {
