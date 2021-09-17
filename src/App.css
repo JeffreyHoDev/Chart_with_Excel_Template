@@ -13,15 +13,22 @@
   color: white;
 }
 
+.input-section {
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
 h3 {
-  margin: 1.2rem;
+  margin-left: 1.1rem;
 }
 
 .App-link {
   color: #61dafb;
 }
 
-.overall-chart, .fatigue-chart {
+.overall-chart, .fatigue-chart, .forward-chart, .pedestrian-chart {
   display: flex;
 }
 

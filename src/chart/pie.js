@@ -34,7 +34,7 @@ export const PieChart = ({...props}) => {
             title:{
               display:true,
               text:'Overall Validation',
-              fontSize:40
+              fontSize:12
             },
             legend:{
               display:true,
