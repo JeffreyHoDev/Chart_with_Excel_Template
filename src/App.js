@@ -1,5 +1,7 @@
 import './App.css';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+
+import ReactExcel from './ReactExcel';
 
 import {PieChart} from './chart/pie'
 
@@ -48,9 +50,43 @@ function App() {
   const queryData = async(e, startdate, enddate) => {
     e.preventDefault()
     try{
+      // Get Overall Human Validation
+      let response = await fetch('http://localhost:6001/getExcel',{
+        "headers": {
+          "Content-type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({
+          "type": "human",
+          "start_date": startdate,
+          "end_date": enddate
+        })
+      })
+      
+      let data = await response.json()
+      data["type"] = "overall"
+      setDisplayData(data)
+
+    // Get Overall Machine Validation
+    response = await fetch('http://localhost:6001/getExcel',{
+      "headers": {
+        "Content-type": "application/json"
+      },
+      method: "POST",
+      body: JSON.stringify({
+        "type": "machine",
+        "start_date": startdate,
+        "end_date": enddate
+      })
+    })
+    
+    data = await response.json()
+    data["type"] = "overall"
+    setDisplayData(data)
+
 
       // Handling Driver Fatigue event type
-      let response = await fetch("http://localhost:6001/query", {
+      response = await fetch("http://localhost:6001/query", {
         headers: {
           "Content-type": "application/json"
         },
@@ -63,7 +99,7 @@ function App() {
         })
       })
 
-      let data = await response.json()
+      data = await response.json()
       await settingData("Driver Fatigue", "human", data)
 
       response = await fetch("http://localhost:6001/query", {
@@ -154,17 +190,6 @@ function App() {
   }
 
 
-
-  useEffect(() => {
-    fetch('http://localhost:6001/getExcel')
-    .then(response => response.json())
-    .then(data => {
-      data["type"] = "overall"
-      setDisplayData(data)
-    })
-  }, [fatigueHumanData, fatigueMachineData])
-
-
   return (
     <div className="App">
       <header className="App-header">
@@ -175,6 +200,7 @@ function App() {
         <input type="date" name="end_date" onChange={(e) => setEndDate(e.target.value)}/>
         <button onClick={(e) => queryData(e, startDate, endDate)}>Search</button>
       </div>
+      <ReactExcel />
       <div className="chart-flex">
         <div className="overall-chart">
           <div className="overall-human">

@@ -18,21 +18,30 @@ const knex = require('knex')({
 
 const app = express()
 app.use(cors())
+app.use(bodyParser({limit: '1000mb'})) // Must be above bodyparser.json to avoid error 413 (POST too large payload)
 app.use(bodyParser.json())
 
-app.get('/getExcel', async (req, res) => {
+app.post('/getExcel', async (req, res) => {
 
+    let type = req.body.type
     let validCount = 0
     let invalidCount = 0
+    let string = `${type}_validation`
+    let startDate = req.body.start_date;
+    let endDate = req.body.end_date;
+    let startDateTime = `${startDate}T00:00:00.000Z`;
+    let endDateTime = `${endDate}T23:59:59.000Z`;
     knex('eventrecord')
-    .count('human_validation')
-    .where({'human_validation': "Valid"})
+    .count(`${type}_validation`)
+    .where({[string]: "Valid"})
+    .whereBetween('datetime', [startDateTime, endDateTime])
     .then(data => validCount = data[0]["count"])
     .catch(console.log)
 
     knex('eventrecord')
-    .count('human_validation')
-    .where({'human_validation': "Invalid"})
+    .count(`${type}_validation`)
+    .where({[string]: "Invalid"})
+    .whereBetween('datetime', [startDateTime, endDateTime])
     .then(data => invalidCount = data[0]["count"])
     .then(() => {
       let responseData = {
@@ -109,26 +118,31 @@ app.post('/query', (req,res) => {
   .catch(console.log)
 })
 
-app.get('/import', async (req, res) => {
-    const rawDataFromExcel = await excel.readingExcel()
-    const data = rawDataFromExcel.map((item) => {
-        // let d = new Date(item[5]);
-        // let timestamp = d.getTime()/1000000;
-        let object = {};
-        object["fleet"] = item[2];
-        object["vehicle_plate"] = item[3];
-        object["event_type"] = item[4];
-        object["datetime"] = item[5];
-        object["latitude"] = item[7];
-        object["longitude"] = item[8];
-        object["machine_validation"] = item[9];
-        object["human_validation"] = item[10];
-        object["hyperlink"] = item[12];
-
-        knex('eventrecord').insert(object)
-        .catch(console.error)
-    }) 
-    res.send("OK")
+app.post('/import', (req, res) => {
+    // const rawDataFromExcel = await excel.readingExcel()
+    try {
+      req.body.map((item) => {
+          // let d = new Date(item[5]);
+          // let timestamp = d.getTime()/1000000;
+          // let object = {};
+          // object["fleet"] = item[2];
+          // object["vehicle_plate"] = item[3];
+          // object["event_type"] = item[4];
+          // object["datetime"] = item[5];
+          // object["latitude"] = item[7];
+          // object["longitude"] = item[8];
+          // object["machine_validation"] = item[9];
+          // object["human_validation"] = item[10];
+          // object["hyperlink"] = item[12];
+  
+        knex('eventrecord').insert(item)
+        .catch(res.json)
+      }) 
+      res.json("Import Success!")
+    }
+    catch(err){
+      res.json(err)
+    }
 })
 
 app.listen(port, () => {
