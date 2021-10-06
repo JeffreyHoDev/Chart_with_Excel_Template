@@ -7,7 +7,12 @@ import {PieChart} from './chart/pie'
 
 function App() {
 
-  const [displayData, setDisplayData ] = useState([])
+  const [displayOverallHumanData, setDisplayHumanData ] = useState([])
+  const [displayOverallMachineData, setDisplayMachineData ] = useState([])
+  const [summaryOverallData, setSummaryOverallData ] = useState("")
+  const [summaryFatigueData, setSummaryFatigueData ] = useState("")
+  const [summaryForwardData, setSummaryForwardData ] = useState("")
+  const [summaryPedestrianData, setSummaryPedestrianData ] = useState("")
   const [fatigueHumanData, setFatigueHumanData ] = useState([])
   const [fatigueMachineData, setFatigueMachineData ] = useState([])
   const [forwardHumanData, setForwardHumanData ] = useState([])
@@ -65,7 +70,7 @@ function App() {
       
       let data = await response.json()
       data["type"] = "overall"
-      setDisplayData(data)
+      setDisplayHumanData(data)
 
     // Get Overall Machine Validation
     response = await fetch('http://localhost:6001/getExcel',{
@@ -82,7 +87,7 @@ function App() {
     
     data = await response.json()
     data["type"] = "overall"
-    setDisplayData(data)
+    setDisplayMachineData(data)
 
 
       // Handling Driver Fatigue event type
@@ -184,6 +189,69 @@ function App() {
       data = await response.json()
       await settingData("Pedestrian Collision Warning", "machine", data)
 
+      // Get Summary Data
+      response = await fetch("http://localhost:6001/getSummaryData", {
+        headers: {
+          "Content-type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({
+          "start_date": startdate,
+          "end_date": enddate,
+          "event_type": "overall"
+        })
+      })
+
+      data = await response.json()
+      await setSummaryOverallData(data)
+
+      response = await fetch("http://localhost:6001/getSummaryData", {
+        headers: {
+          "Content-type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({
+          "start_date": startdate,
+          "end_date": enddate,
+          "event_type": "Driver Fatigue"
+        })
+      })
+
+      data = await response.json()
+      await setSummaryFatigueData(data)
+
+      // Summary of Pedestrian
+      response = await fetch("http://localhost:6001/getSummaryData", {
+        headers: {
+          "Content-type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({
+          "start_date": startdate,
+          "end_date": enddate,
+          "event_type": "Pedestrian Collision Warning"
+        })
+      })
+
+      data = await response.json()
+      await setSummaryPedestrianData(data)
+
+      // Summary of Forward Collision
+      response = await fetch("http://localhost:6001/getSummaryData", {
+        headers: {
+          "Content-type": "application/json"
+        },
+        method: "POST",
+        body: JSON.stringify({
+          "start_date": startdate,
+          "end_date": enddate,
+          "event_type": "Forward Collision Warning"
+        })
+      })
+
+      data = await response.json()
+      await setSummaryForwardData(data)
+
     }catch(err){
       console.log(err)
     }
@@ -201,50 +269,60 @@ function App() {
         <button onClick={(e) => queryData(e, startDate, endDate)}>Search</button>
       </div>
       <ReactExcel />
-      <div className="chart-flex">
-        <div className="overall-chart">
-          <div className="overall-human">
-            <h3>Overall Human Validation</h3>
-            <PieChart data={displayData}/>
+      <p className="dateRange">{startDate ? startDate : null} - {endDate ? endDate : null}</p>
+      <div className="container">
+        <div className="chart-flex">
+          <div className="overall-chart">
+            <div className="overall-human">
+              <h3>Overall Human Validation</h3>
+              <PieChart data={displayOverallHumanData}/>
+            </div>
+            <div className="overall-machine">
+              <h3>Overall Machine Validation</h3>
+              <PieChart data={displayOverallMachineData}/>
+            </div>
           </div>
-          <div className="overall-machine">
-            <h3>Overall Machine Validation</h3>
-            <PieChart data={displayData}/>
+          <div className="fatigue-chart">
+            <div className="fatigue-human">
+              <h3>Fatigue Human Validation</h3>
+              <PieChart data={fatigueHumanData}/>
+            </div>
+            <div className="fatigue-machine">
+              <h3>Fatigue Machine Validation</h3>
+              <PieChart data={fatigueMachineData}/>
+            </div>
+          </div>
+          <div className="forward-chart">
+            <div className="forward-human">
+              <h3>Forward Collision Warning</h3>
+              <h3>Human Validation</h3>
+              <PieChart data={forwardHumanData}/>
+            </div>
+            <div className="forward-machine">
+              <h3>Forward Collision Warning</h3>
+              <h3>Machine Validation</h3>
+              <PieChart data={forwardMachineData}/>
+            </div>
+          </div>
+          <div className="pedestrian-chart">
+            <div className="pedestrian-human">
+              <h3>Pedestrian Collision Warning</h3>
+              <h3>Human Validation</h3>
+              <PieChart data={pedestrianHumanData}/>
+            </div>
+            <div className="pedestrian-machine">
+              <h3>Pedestrian Collision Warning</h3>
+              <h3>Machine Validation</h3>
+              <PieChart data={pedestrianMachineData}/>
+            </div>
           </div>
         </div>
-        <div className="fatigue-chart">
-          <div className="fatigue-human">
-            <h3>Fatigue Human Validation</h3>
-            <PieChart data={fatigueHumanData}/>
-          </div>
-          <div className="fatigue-machine">
-            <h3>Fatigue Machine Validation</h3>
-            <PieChart data={fatigueMachineData}/>
-          </div>
-        </div>
-        <div className="forward-chart">
-          <div className="forward-human">
-            <h3>Forward Collision Warning</h3>
-            <h3>Human Validation</h3>
-            <PieChart data={forwardHumanData}/>
-          </div>
-          <div className="forward-machine">
-            <h3>Forward Collision Warning</h3>
-            <h3>Machine Validation</h3>
-            <PieChart data={forwardMachineData}/>
-          </div>
-        </div>
-        <div className="pedestrian-chart">
-          <div className="pedestrian-human">
-            <h3>Pedestrian Collision Warning</h3>
-            <h3>Human Validation</h3>
-            <PieChart data={pedestrianHumanData}/>
-          </div>
-          <div className="pedestrian-machine">
-            <h3>Pedestrian Collision Warning</h3>
-            <h3>Machine Validation</h3>
-            <PieChart data={pedestrianMachineData}/>
-          </div>
+        <div className="summary-container">
+          <h3>Overall</h3>
+          <label>Total Events: </label><p>{summaryOverallData ? summaryOverallData: null} </p>
+          <label>Total Fatigue Events: </label><p>{summaryFatigueData ? summaryFatigueData: null}</p>
+          <label>Total PCW Events: </label><p>{summaryPedestrianData ? summaryPedestrianData: null}</p>
+          <label>Total FCW Events: </label><p>{summaryForwardData ? summaryForwardData: null}</p>
         </div>
       </div>
       </header>

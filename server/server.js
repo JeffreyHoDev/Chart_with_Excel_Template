@@ -29,8 +29,8 @@ app.post('/getExcel', async (req, res) => {
     let string = `${type}_validation`
     let startDate = req.body.start_date;
     let endDate = req.body.end_date;
-    let startDateTime = `${startDate}T00:00:00.000Z`;
-    let endDateTime = `${endDate}T23:59:59.000Z`;
+    let startDateTime = `${startDate} 00:00:00+08`;
+    let endDateTime = `${endDate} 23:59:59+08`;
     knex('eventrecord')
     .count(`${type}_validation`)
     .where({[string]: "Valid"})
@@ -47,7 +47,8 @@ app.post('/getExcel', async (req, res) => {
       let responseData = {
             "valid": parseInt(validCount),
             "invalid": parseInt(invalidCount)
-        }
+      }
+      console.log(responseData)
       res.json(responseData)
     })
     .catch(console.log)
@@ -89,8 +90,8 @@ app.post('/query', (req,res) => {
   let eventType = req.body.event_type
   let startDate = req.body.start_date;
   let endDate = req.body.end_date;
-  let startDateTime = `${startDate}T00:00:00.000Z`;
-  let endDateTime = `${endDate}T23:59:59.000Z`;
+  let startDateTime = `${startDate} 00:00:00+08`;
+  let endDateTime = `${endDate} 23:59:59+08`;
   let string = `${type}_validation`
 
   let validCount = 0
@@ -144,6 +145,49 @@ app.post('/import', (req, res) => {
       res.json(err)
     }
 })
+
+app.post('/getSummaryData', (req,res) => {
+
+  let eventType = req.body.event_type
+  let startDate = req.body.start_date;
+  let endDate = req.body.end_date;
+  let startDateTime = `${startDate} 00:00:00+08`;
+  let endDateTime = `${endDate} 23:59:59+08`;
+
+  if(eventType === "overall"){
+    knex('eventrecord')
+    .count(`vehicle_plate`)
+    .whereBetween('datetime', [startDateTime, endDateTime])
+    .then(data => res.json(data[0]["count"]))
+    .catch(console.log)
+  }else {
+    knex('eventrecord')
+    .count(`vehicle_plate`)
+    .where({'event_type': eventType})
+    .whereBetween('datetime', [startDateTime, endDateTime])
+    .then(data => res.json(data[0]["count"]))
+    .catch(console.log)
+  }
+
+})
+
+app.post('/getCompanyCounts', (req,res) => {
+
+  let startDate = req.body.start_date;
+  let endDate = req.body.end_date;
+  let startDateTime = `${startDate} 00:00:00+08`;
+  let endDateTime = `${endDate} 23:59:59+08`;
+
+    knex('eventrecord')
+    .distinct('fleet')
+    .groupBy('fleet')
+    .count()
+    .whereBetween('datetime', [startDateTime, endDateTime])
+    .then(data => res.json(data))
+    .catch(console.log)
+})
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)

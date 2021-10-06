@@ -13,8 +13,44 @@
   color: white;
 }
 
+.dateRange {
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.summary-container {
+  background-color: #2f343d;
+  padding: .8rem;
+  height: max-content;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.summary-container h3 {
+  text-decoration: underline;
+  margin: 0;
+}
+
+.summary-container label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.summary-container p {
+  font-weight: 900;
+  margin-top: 0;
+  color: rgb(111, 111, 255);
+}
+
 .input-section {
-  width: 100vw;
+  width: 95vw;
   display: flex;
   align-items: center;
   justify-content: space-around;
