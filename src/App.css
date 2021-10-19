@@ -30,11 +30,11 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  font-size: 1.2rem;
 }
 
-.summary-container h3 {
+h4 {
   text-decoration: underline;
-  margin: 0;
 }
 
 .summary-container label {
@@ -56,6 +56,21 @@
   justify-content: space-around;
 }
 
+.pagelink-list {
+  display: flex;
+  width: 50%;
+  justify-content: space-evenly;
+  text-decoration: underline;
+  color: rgb(170, 170, 170);
+  margin: 0;
+  padding: 0;
+  font-size: 1.1rem;
+}
+
+.pagelink-list h5 {
+  cursor: pointer;
+}
+
 h3 {
   margin-left: 1.1rem;
 }
@@ -68,4 +83,19 @@ h3 {
   display: flex;
 }
 
+.summary-fleet {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.fleet {
+  display: flex;
+}
+
+.fleet label, .fleet p {
+  font-size: 1.1rem;
+  padding: .3rem;
+}
 
