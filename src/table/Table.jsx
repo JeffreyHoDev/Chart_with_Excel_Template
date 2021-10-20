@@ -1,57 +1,44 @@
 import React, {useMemo} from 'react'
 import { useTable, usePagination } from 'react-table'
+import './table.css'
 
-const Table = () => {
+const Table = ({tableData}) => {
     const columns = useMemo(
         () => [
           {
-            Header: 'Info',
+            Header: 'Raw Data',
             columns: [
               {
-                Header: 'Age',
-                accessor: 'age',
+                Header: 'Fleet',
+                accessor: 'fleet',
               },
               {
-                Header: 'Visits',
-                accessor: 'visits',
+                Header: 'Vehicle Plate',
+                accessor: 'vehicle_plate',
               },
               {
-                Header: 'Status',
-                accessor: 'status',
+                Header: 'Event',
+                accessor: 'event_type',
               },
               {
-                Header: 'Profile Progress',
-                accessor: 'progress',
+                Header: 'Date Time',
+                accessor: 'datetime',
+              },
+              {
+                Header: 'Machine Validation',
+                accessor: 'machine_validation',
+              },
+              {
+                Header: 'Human Validation',
+                accessor: 'human_validation',
               },
             ],
           },
         ],
         []
       )
-    
-    const data = useMemo(
-        () => [
-          {
-            age: 'Hello',
-            visits: 'World',
-            status: 'Hello',
-            progress: 'World',
-          },
-          {
-            age: 'Hello',
-            visits: 'World',
-            status: 'Hello',
-            progress: 'World',
-          },
-          {
-            age: 'Hello',
-            visits: 'World',
-            status: 'Hello',
-            progress: 'World',
-          },
-        ],
-        []
-      )
+
+    let data = useMemo(() => tableData)
     
     const {
         getTableProps,

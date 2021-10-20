@@ -1,0 +1,24 @@
+table, tr, td, thead, th {
+    border: 1px solid white;
+}
+
+table {
+    margin-top: 1.1rem;
+}
+
+td {
+    padding: 0 .2rem;
+}
+
+.pagination {
+    background-color: rgb(32, 32, 32);
+    color: rgb(255, 255, 255);
+    padding: .3rem 1.5rem;
+    padding-bottom:  1.1rem;
+    margin-top: 1.1rem;
+
+}
+
+.pagination span {
+    font-size: 1.1rem;
+}

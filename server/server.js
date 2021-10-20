@@ -323,6 +323,18 @@ app.post('/getLine', (req,res) => {
 
 })
 
+app.post('/getTable', (req,res) => {
+  let startDate = req.body.start_date;
+  let endDate = req.body.end_date;
+  let startDateTime = `${startDate} 00:00:00+08`;
+  let endDateTime = `${endDate} 23:59:59+08`;
+
+  knex('eventrecord')
+  .whereBetween('datetime', [startDateTime, endDateTime])
+  .then(data => res.json(data))
+  .catch(console.log)
+})
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })

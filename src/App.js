@@ -28,6 +28,7 @@ function App() {
   const [lineData, setLineData ] = useState([])
   const [eventType, setEventType] = useState("Driver Fatigue")
   const [page, setPage] = useState("Pie")
+  const [tableData, setTableData] = useState([])
 
   // Setting Data variable using Hooks - Valid and Invalid Counts
   const settingData = (event_type, validation_type, data) => {
@@ -319,6 +320,25 @@ function App() {
           console.log(err)
         }
         break
+      case "table":
+        try{
+          let response = await fetch('http://localhost:6001/getTable', {
+            "headers": {
+              "Content-type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify({
+              "start_date": startdate,
+              "end_date": enddate
+            })
+          })
+
+          let data = await response.json()
+          setTableData(data)
+          break
+        }catch(err){
+          console.log(err)
+        }
       default:
         break
     }
@@ -448,9 +468,13 @@ function App() {
             <input type="date" name="start_date" onChange={(e) => setStartDate(e.target.value)}/>
             <span htmlFor="end_date">End Date: </span>
             <input type="date" name="end_date" onChange={(e) => setEndDate(e.target.value)}/>
-            <button onClick={(e) => queryData(e, startDate, endDate, "pie")}>Search</button>
+            <button onClick={(e) => queryData(e, startDate, endDate, "table")}>Search</button>
           </div>
-          <Table />
+          <div className="pagelink-list">
+            <h5 onClick={e => setPage("Pie")}>Pie Chart Page</h5>
+            <h5 onClick={e => setPage("Line")}>Line Chart Page</h5>
+          </div>
+          <Table tableData={tableData} />
         </>
       )
     }
